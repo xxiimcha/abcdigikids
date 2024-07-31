@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'play/alphabets_game_type.dart';
 import 'play/shapes_play.dart';
-import 'play/numbers_play.dart';
+import 'play/numbers_play.dart'; // Import the NumbersGameTypePage
 import 'play/colors_play.dart';
 import 'package:google_fonts/google_fonts.dart';
 
@@ -21,7 +21,7 @@ class PlayScreen extends StatelessWidget {
         children: [
           _buildCategoryButton(context, 'Alphabets', AlphabetsGameTypePage()),
           _buildCategoryButton(context, 'Shapes', ShapesPlayPage()),
-          _buildCategoryButton(context, 'Numbers', NumbersPlayPage()),
+          _buildCategoryButton(context, 'Numbers', NumbersGameTypePage()), // Use NumbersGameTypePage
           _buildCategoryButton(context, 'Colors', ColorsPlayPage()),
         ],
       ),
