@@ -3,6 +3,7 @@ import 'package:google_fonts/google_fonts.dart';
 import 'numbers_identifying_game.dart';
 import 'numbers_matching_game.dart';
 import 'numbers_tracing_game.dart';
+import 'numbers_pronunciation_game.dart'; // Import the Pronunciation game
 
 class NumbersGameTypePage extends StatelessWidget {
   @override
@@ -21,6 +22,7 @@ class NumbersGameTypePage extends StatelessWidget {
           _buildGameTypeButton(context, 'Identifying Numbers', NumbersIdentifyingGame()),
           _buildGameTypeButton(context, 'Matching Numbers', NumbersMatchingGame()),
           _buildGameTypeButton(context, 'Tracing Numbers', NumbersTracingGame()),
+          _buildGameTypeButton(context, 'Pronunciation Numbers', NumbersPronunciationGame()), // Add Pronunciation game
         ],
       ),
     );
