@@ -40,7 +40,7 @@ class _LearnScreenState extends State<LearnScreen> with SingleTickerProviderStat
             // Background image
             Positioned.fill(
               child: Image.asset(
-                'assets/backgrounds/background.gif',
+                'assets/backgrounds/chalkboard.gif',
                 fit: BoxFit.cover,
               ),
             ),

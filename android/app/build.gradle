@@ -9,7 +9,7 @@ plugins {
 
 android {
     namespace = "com.example.abcdigikids"
-    compileSdk = flutter.compileSdkVersion
+    compileSdk = flutter.compileSdkVersion // Keep this as is if you are using flutter's compile SDK version
     ndkVersion = flutter.ndkVersion
 
     compileOptions {
@@ -22,26 +22,27 @@ android {
     }
 
     defaultConfig {
-        // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
+        // Unique Application ID
         applicationId = "com.example.abcdigikids"
-        // You can update the following values to match your application needs.
-        // For more information, see: https://flutter.dev/to/review-gradle-config.
-        minSdk = flutter.minSdkVersion
-        targetSdk = flutter.targetSdkVersion
+        
+        // Set the minimum and target SDK versions
+        minSdkVersion 23   // Manually setting minSdkVersion to 23
+        targetSdkVersion 33 // Update the targetSdkVersion if necessary
+        
         versionCode = flutter.versionCode
         versionName = flutter.versionName
     }
 
     buildTypes {
         release {
-            // TODO: Add your own signing config for the release build.
-            // Signing with the debug keys for now, so `flutter run --release` works.
+            // Use debug keys for now for signing
             signingConfig = signingConfigs.debug
         }
     }
 }
 
 dependencies {
+    // Add your dependencies here if needed
 }
 
 flutter {

@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
+import '../../utils/bottom_navbar.dart'; // Adjust the import path for your BottomNavBar widget
 
-class ColorsPage extends StatelessWidget {
-  // List of all image paths in the learn_colors folder
+class ColorsPage extends StatefulWidget {
+  @override
+  _ColorsPageState createState() => _ColorsPageState();
+}
+
+class _ColorsPageState extends State<ColorsPage> {
   final List<String> imagePaths = [
     'assets/learn_colors/red.png',
     'assets/learn_colors/blue.png',
@@ -10,49 +15,132 @@ class ColorsPage extends StatelessWidget {
     // Add more image paths as needed
   ];
 
+  final PageController _pageController = PageController();
+  int _currentIndex = 0;
+
+  // Update index when the user swipes to another page
+  void _onPageChanged(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+  }
+
+  // Navigate to the next flashcard
+  void _nextCard() {
+    if (_currentIndex < imagePaths.length - 1) {
+      _pageController.nextPage(duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+    }
+  }
+
+  // Navigate to the previous flashcard
+  void _previousCard() {
+    if (_currentIndex > 0) {
+      _pageController.previousPage(duration: Duration(milliseconds: 300), curve: Curves.easeIn);
+    }
+  }
+
+  // Handle bottom nav bar taps
+  void _onBottomNavTapped(int index) {
+    // Handle navigation based on the selected bottom navigation bar item
+    setState(() {
+      _currentIndex = index;
+      if (index == 0) {
+        Navigator.pushNamed(context, '/play'); // Navigate to the Play page
+      } else if (index == 2) {
+        Navigator.pushNamed(context, '/learn'); // Navigate to the Learn page
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Colors'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(8.0),
-        child: GridView.builder(
-          itemCount: imagePaths.length,
-          gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-            crossAxisCount: 2, // Adjust the number of columns here
-            crossAxisSpacing: 10,
-            mainAxisSpacing: 10,
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/backgrounds/background.gif',
+              fit: BoxFit.cover,
+            ),
           ),
-          itemBuilder: (context, index) {
-            return Card(
-              elevation: 5,
-              child: Column(
-                children: [
-                  Expanded(
-                    child: Image.asset(
-                      imagePaths[index],
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  Padding(
-                    padding: const EdgeInsets.all(8.0),
-                    child: Text(
-                      imagePaths[index]
-                          .split('/')
-                          .last
-                          .split('.')
-                          .first
-                          .toUpperCase(), // Displays the color name as the image name
-                      style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
-                    ),
-                  ),
-                ],
+          // Semi-transparent overlay
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
+            ),
+          ),
+          Column(
+            children: [
+              Expanded(
+                child: PageView.builder(
+                  controller: _pageController,
+                  onPageChanged: _onPageChanged,
+                  itemCount: imagePaths.length,
+                  itemBuilder: (context, index) {
+                    return Padding(
+                      padding: const EdgeInsets.all(16.0),
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Expanded(
+                            child: ClipRRect(
+                              borderRadius: BorderRadius.circular(20.0),
+                              child: Image.asset(
+                                imagePaths[index],
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                          ),
+                          SizedBox(height: 20),
+                        ],
+                      ),
+                    );
+                  },
+                ),
               ),
-            );
-          },
-        ),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 20.0),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                  children: [
+                    ElevatedButton(
+                      onPressed: _previousCard,
+                      child: Text('Previous'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.blue,
+                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                    ElevatedButton(
+                      onPressed: _nextCard,
+                      child: Text('Next'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.green,
+                        padding: EdgeInsets.symmetric(horizontal: 30, vertical: 15),
+                        textStyle: TextStyle(fontSize: 16),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          // Handle microphone/talk action
+        },
+        child: Icon(Icons.mic, size: 30, color: Colors.white),
+        backgroundColor: Colors.blueAccent,
+        elevation: 5,
+      ),
+      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      bottomNavigationBar: BottomNavBar(
+        currentIndex: _currentIndex,
+        onTap: _onBottomNavTapped,
       ),
     );
   }
