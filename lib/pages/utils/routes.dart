@@ -9,6 +9,9 @@ import '../features/play/play_screen.dart'; // Import PlayScreen
 import '../features/play/memory_match_game.dart'; // Import Memory Match game
 import '../features/play/puzzle_game.dart'; // Import Puzzle Game
 import '../features/play/quiz_game.dart'; // Import Quiz Game
+import '../features/play/identifying_game.dart'; // Import Quiz Game
+import '../features/play/matching_game.dart'; // Import Quiz Game
+import '../features/play/matching_game_selection.dart'; // Import Quiz Game
 
 class AppRoutes {
   static const String login = '/login'; // Route for the login screen
@@ -21,6 +24,9 @@ class AppRoutes {
   static const String memoryMatch = '/memory_match'; // Route for Memory Match game
   static const String puzzleGame = '/puzzle_game';   // Route for Puzzle Game
   static const String quizGame = '/quiz_game';       // Route for Quiz Game
+  static const String identifyingGame = '/identifying_game';       // Route for Quiz Game
+  static const String matchingGame = '/matching_game';
+  static const String matchingGameSelection = '/matching_game_selection';
 
   static Map<String, WidgetBuilder> routes = {
     login: (context) => LoginPage(), // Define the login route
@@ -33,5 +39,8 @@ class AppRoutes {
     memoryMatch: (context) => MemoryMatchGame(), // Add Memory Match Game route
     puzzleGame: (context) => PuzzleGame(), // Add Puzzle Game route
     quizGame: (context) => QuizGame(), // Add Quiz Game route
+    identifyingGame: (context) => IdentifyingGame (), // Add Quiz Game route
+    matchingGame: (context) => MatchingGame(category: 'Others'), // Pass category as a named parameter
+    matchingGameSelection: (context) => CategorySelectionScreen(), // Add the matching game screen here
   };
 }

@@ -19,6 +19,7 @@ dependencies:
   cloud_firestore: ^5.4.4
   speech_to_text: ^7.0.0
   audioplayers: ^6.1.0
+  flutter_tts: ^4.0.2
 
 dev_dependencies:
   flutter_test:
@@ -37,5 +38,8 @@ flutter:
     - assets/learn_abc/
     - assets/learn_numbers/
     - assets/learn_shapes/
-    - assets/music/music.mp3
+    - assets/music/
     - assets/assets/music/music.mp3
+    - assets/originals/
+    - assets/shadows/
+    - assets/letters/
