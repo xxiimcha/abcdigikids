@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../../utils/bottom_navbar.dart'; // Import your BottomNavBar widget
 import 'package:speech_to_text/speech_to_text.dart' as stt;
+import 'dart:math';
 
 class TalkScreen extends StatefulWidget {
   @override
@@ -9,9 +10,10 @@ class TalkScreen extends StatefulWidget {
 
 class _TalkScreenState extends State<TalkScreen> {
   int _selectedIndex = 1;
-  late stt.SpeechToText _speech; // Speech-to-text instance
+  late stt.SpeechToText _speech;
   bool _isListening = false;
-  String _recognizedText = 'Tap the mic and start speaking...'; // To store the recognized text
+  String _recognizedText = 'Tap the mic and start speaking...';
+  double _soundWaveAmplitude = 0.0;
 
   @override
   void initState() {
@@ -39,9 +41,8 @@ class _TalkScreenState extends State<TalkScreen> {
       setState(() => _isListening = true);
       _speech.listen(
         onResult: (val) => setState(() {
-          _recognizedText = val.recognizedWords; // Store recognized words
-          // Here, you could add logic to pass the recognized words to an AI service
-          // such as Google Dialogflow, OpenAI, etc.
+          _recognizedText = val.recognizedWords;
+          _soundWaveAmplitude = Random().nextDouble() * 30; // Simulate amplitude changes
         }),
       );
     }
@@ -50,7 +51,10 @@ class _TalkScreenState extends State<TalkScreen> {
   // Stop listening to user's speech
   void _stopListening() {
     _speech.stop();
-    setState(() => _isListening = false);
+    setState(() {
+      _isListening = false;
+      _soundWaveAmplitude = 0.0; // Reset soundwave
+    });
   }
 
   @override
@@ -81,54 +85,61 @@ class _TalkScreenState extends State<TalkScreen> {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
-                    SizedBox(height: 40),
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        // Microphone button with gradient background
-                        Container(
-                          width: 150,
-                          height: 150,
-                          decoration: BoxDecoration(
-                            shape: BoxShape.circle,
-                            gradient: LinearGradient(
-                              colors: [Colors.orange, Colors.yellow],
-                              begin: Alignment.topLeft,
-                              end: Alignment.bottomRight,
-                            ),
-                            boxShadow: [
-                              BoxShadow(
-                                color: Colors.black.withOpacity(0.2),
-                                blurRadius: 10,
-                                spreadRadius: 5,
-                              ),
-                            ],
-                          ),
-                          child: IconButton(
-                            icon: Icon(
-                              _isListening ? Icons.mic_off : Icons.mic,
-                              size: 80,
-                              color: Colors.white,
-                            ),
-                            onPressed: () {
-                              if (_isListening) {
-                                _stopListening();
-                              } else {
-                                _startListening();
-                              }
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                    SizedBox(height: 20), // Space between microphone and text
-
+                    SizedBox(height: 20),
                     // Display recognized speech
                     Text(
                       _recognizedText,
                       style: TextStyle(
                         fontSize: 18,
                         color: Colors.white,
+                      ),
+                      textAlign: TextAlign.center,
+                    ),
+                    SizedBox(height: 20), // Space between text and soundwave
+
+                    // Soundwave visual
+                    CustomPaint(
+                      size: Size(double.infinity, 100),
+                      painter: SoundWavePainter(_isListening, _soundWaveAmplitude),
+                    ),
+
+                    SizedBox(height: 40), // Space between soundwave and microphone button
+
+                    // Microphone button with gradient background
+                    Align(
+                      alignment: Alignment.bottomCenter,
+                      child: Container(
+                        width: 120,
+                        height: 120,
+                        decoration: BoxDecoration(
+                          shape: BoxShape.circle,
+                          gradient: LinearGradient(
+                            colors: [Colors.orange, Colors.yellow],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.2),
+                              blurRadius: 10,
+                              spreadRadius: 5,
+                            ),
+                          ],
+                        ),
+                        child: IconButton(
+                          icon: Icon(
+                            _isListening ? Icons.mic_off : Icons.mic,
+                            size: 60,
+                            color: Colors.white,
+                          ),
+                          onPressed: () {
+                            if (_isListening) {
+                              _stopListening();
+                            } else {
+                              _startListening();
+                            }
+                          },
+                        ),
                       ),
                     ),
                   ],
@@ -157,5 +168,44 @@ class _TalkScreenState extends State<TalkScreen> {
         onTap: _onItemTapped,
       ),
     );
+  }
+}
+
+// Painter for the soundwave effect
+class SoundWavePainter extends CustomPainter {
+  final bool isListening;
+  final double amplitude;
+
+  SoundWavePainter(this.isListening, this.amplitude);
+
+  @override
+  void paint(Canvas canvas, Size size) {
+    final paint = Paint()
+      ..color = Colors.greenAccent
+      ..strokeWidth = 2
+      ..style = PaintingStyle.stroke;
+
+    // Draw the soundwave
+    final path = Path();
+    double waveHeight = amplitude;
+    double frequency = 0.02;
+
+    for (double x = 0; x <= size.width; x++) {
+      double y = size.height / 2 + sin(x * frequency) * waveHeight;
+      if (x == 0) {
+        path.moveTo(x, y);
+      } else {
+        path.lineTo(x, y);
+      }
+    }
+
+    if (isListening) {
+      canvas.drawPath(path, paint);
+    }
+  }
+
+  @override
+  bool shouldRepaint(covariant CustomPainter oldDelegate) {
+    return true;
   }
 }
