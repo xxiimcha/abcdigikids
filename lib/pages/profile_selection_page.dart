@@ -1,8 +1,48 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import 'home_screen.dart'; // Import HomeScreen
+import 'create_profile_page.dart'; // Import HomeScreen
 
-class ProfileSelectionPage extends StatelessWidget {
-  final List<String> profiles = ['User 1', 'User 2', 'User 3', 'User 4']; // Sample profiles
+class ProfileSelectionPage extends StatefulWidget {
+  @override
+  _ProfileSelectionPageState createState() => _ProfileSelectionPageState();
+}
+
+class _ProfileSelectionPageState extends State<ProfileSelectionPage> {
+  final FirebaseAuth _auth = FirebaseAuth.instance;
+  final FirebaseFirestore _firestore = FirebaseFirestore.instance;
+
+  List<Map<String, dynamic>> profiles = [];
+  bool isLoading = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _fetchProfiles();
+  }
+
+  Future<void> _fetchProfiles() async {
+    User? user = _auth.currentUser;
+    if (user == null) return;
+
+    try {
+      QuerySnapshot snapshot = await _firestore
+          .collection('app_profiles')
+          .where('userId', isEqualTo: user.uid)
+          .get();
+
+      setState(() {
+        profiles = snapshot.docs.map((doc) => doc.data() as Map<String, dynamic>).toList();
+        isLoading = false;
+      });
+    } catch (e) {
+      print('Error fetching profiles: $e');
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -22,73 +62,86 @@ class ProfileSelectionPage extends StatelessWidget {
           ),
           // Profile selection
           Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Text(
-                  'Who\'s Watching?',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold,
-                  ),
-                ),
-                SizedBox(height: 40),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  children: profiles.map((profile) {
-                    return GestureDetector(
-                      onTap: () {
-                        // Navigate to HomeScreen when a profile is selected
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => HomeScreen(profileName: profile),
-                          ),
-                        );
-                      },
-                      child: Column(
-                        children: [
-                          // Profile icon (circular with some padding)
-                          Container(
-                            margin: EdgeInsets.symmetric(horizontal: 16),
-                            width: 100,
-                            height: 100,
-                            decoration: BoxDecoration(
-                              shape: BoxShape.circle,
-                              border: Border.all(color: Colors.white, width: 2),
-                              image: DecorationImage(
-                                image: AssetImage('assets/profile_placeholder.jpg'), // Replace with actual profile image
-                                fit: BoxFit.cover,
-                              ),
-                            ),
-                          ),
-                          SizedBox(height: 10),
-                          Text(
-                            profile,
-                            style: TextStyle(
-                              color: Colors.white,
-                              fontSize: 18,
-                            ),
-                          ),
-                        ],
+            child: isLoading
+                ? CircularProgressIndicator(color: Colors.white)
+                : Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Text(
+                        'Who\'s Watching?',
+                        style: TextStyle(
+                          color: Colors.white,
+                          fontSize: 28,
+                          fontWeight: FontWeight.bold,
+                        ),
                       ),
-                    );
-                  }).toList(),
-                ),
-                SizedBox(height: 40),
-                // Add button to add more profiles (optional)
-                TextButton(
-                  onPressed: () {
-                    // Handle adding new profile
-                  },
-                  child: Text(
-                    'Add Profile',
-                    style: TextStyle(color: Colors.white, fontSize: 16),
+                      SizedBox(height: 40),
+                      profiles.isEmpty
+                          ? Text(
+                              'No profile created',
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontSize: 18,
+                              ),
+                            )
+                          : Wrap(
+                              alignment: WrapAlignment.center,
+                              spacing: 20,
+                              runSpacing: 20,
+                              children: profiles.map((profile) {
+                                return GestureDetector(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => HomeScreen(profileName: profile['name']),
+                                      ),
+                                    );
+                                  },
+                                  child: Column(
+                                    children: [
+                                      Container(
+                                        width: 100,
+                                        height: 100,
+                                        decoration: BoxDecoration(
+                                          shape: BoxShape.circle,
+                                          border: Border.all(color: Colors.white, width: 2),
+                                          image: DecorationImage(
+                                            image: AssetImage('assets/profile_placeholder.jpg'),
+                                            fit: BoxFit.cover,
+                                          ),
+                                        ),
+                                      ),
+                                      SizedBox(height: 10),
+                                      Text(
+                                        profile['name'],
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 18,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              }).toList(),
+                            ),
+                      SizedBox(height: 40),
+                      ElevatedButton(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => CreateProfilePage(),
+                            ),
+                          );
+                        },
+                        child: Text(
+                          profiles.isEmpty ? 'Create Profile' : 'Add Profile',
+                          style: TextStyle(color: Colors.white, fontSize: 16),
+                        ),
+                      ),
+                    ],
                   ),
-                ),
-              ],
-            ),
           ),
         ],
       ),

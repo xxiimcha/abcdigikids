@@ -4,46 +4,66 @@ import '../../utils/routes.dart'; // Import your AppRoutes class for navigation
 class PlayScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions for responsiveness
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Choose a Game'),
-      ),
-      body: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: GridView.count(
-          crossAxisCount: 2,
-          crossAxisSpacing: 10,
-          mainAxisSpacing: 10,
-          children: [
-            // Memory Match Game Card
-            GameCard(
-              title: 'Memory Match',
-              icon: Icons.memory,
-              color: Colors.blue,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.memoryMatch);
-              },
+      body: Stack(
+        children: [
+          // Background image
+          Positioned.fill(
+            child: Image.asset(
+              'assets/backgrounds/chalkboard.gif',
+              fit: BoxFit.cover,
+              width: screenWidth,
+              height: screenHeight,
             ),
-            // Puzzle Game Card
-            GameCard(
-              title: 'Puzzle Game',
-              icon: Icons.extension,
-              color: Colors.green,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.puzzleGame);
-              },
+          ),
+          // Semi-transparent overlay for improved readability
+          Positioned.fill(
+            child: Container(
+              color: Colors.black.withOpacity(0.5),
             ),
-            // Quiz Game Card
-            GameCard(
-              title: 'Quiz Game',
-              icon: Icons.quiz,
-              color: Colors.orange,
-              onTap: () {
-                Navigator.pushNamed(context, AppRoutes.quizGame);
-              },
+          ),
+          Padding(
+            padding: const EdgeInsets.all(16.0),
+            child: GridView.count(
+              crossAxisCount: 2,
+              crossAxisSpacing: 10,
+              mainAxisSpacing: 10,
+              children: [
+                // Memory Match Game Card
+                GameCard(
+                  title: 'Memory Match',
+                  icon: Icons.memory,
+                  color: Colors.blue,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.memoryMatch);
+                  },
+                ),
+                // Puzzle Game Card
+                GameCard(
+                  title: 'Puzzle Game',
+                  icon: Icons.extension,
+                  color: Colors.green,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.puzzleGame);
+                  },
+                ),
+                // Quiz Game Card
+                GameCard(
+                  title: 'Quiz Game',
+                  icon: Icons.quiz,
+                  color: Colors.orange,
+                  onTap: () {
+                    Navigator.pushNamed(context, AppRoutes.quizGame);
+                  },
+                ),
+              ],
             ),
-          ],
-        ),
+          ),
+        ],
       ),
     );
   }
@@ -68,7 +88,7 @@ class GameCard extends StatelessWidget {
     return GestureDetector(
       onTap: onTap,
       child: Card(
-        color: color,
+        color: color.withOpacity(0.8), // Slight transparency for a more dynamic look
         shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(15)),
         elevation: 5,
         child: Column(
@@ -78,7 +98,12 @@ class GameCard extends StatelessWidget {
             SizedBox(height: 10),
             Text(
               title,
-              style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: Colors.white),
+              textAlign: TextAlign.center,
+              style: TextStyle(
+                fontSize: 18,
+                fontWeight: FontWeight.bold,
+                color: Colors.white,
+              ),
             ),
           ],
         ),

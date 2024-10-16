@@ -20,30 +20,38 @@ class _SignupPageState extends State<SignupPage> {
     String password = passwordController.text.trim();
     String confirmPassword = confirmPasswordController.text.trim();
 
+    print('Attempting to sign up with email: $email');
+
     if (email.isEmpty || password.isEmpty || confirmPassword.isEmpty) {
       _showError('Please fill in all fields');
+      print('Sign up failed: One or more fields are empty');
       return;
     }
 
     if (password != confirmPassword) {
       _showError('Passwords do not match');
+      print('Sign up failed: Passwords do not match');
       return;
     }
 
     try {
+      print('Calling Firebase createUserWithEmailAndPassword method');
       UserCredential userCredential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
       );
-      // User successfully signed up
+      print('Firebase response: User signed up successfully with UID: ${userCredential.user?.uid}');
+      
       _showSuccess('Successfully signed up! You can now log in.');
       Navigator.pop(context); // Navigate back to login page
     } catch (e) {
+      print('Error during sign up: $e');
       _showError(e.toString());
     }
   }
 
   void _showError(String message) {
+    print('Displaying error message: $message');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),
@@ -53,6 +61,7 @@ class _SignupPageState extends State<SignupPage> {
   }
 
   void _showSuccess(String message) {
+    print('Displaying success message: $message');
     ScaffoldMessenger.of(context).showSnackBar(
       SnackBar(
         content: Text(message),

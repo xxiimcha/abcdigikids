@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+
 class BottomNavBar extends StatelessWidget {
   final int currentIndex;
   final Function(int) onTap;
@@ -10,28 +11,34 @@ class BottomNavBar extends StatelessWidget {
     return BottomAppBar(
       shape: CircularNotchedRectangle(),
       notchMargin: 8,
+      elevation: 8,
+      color: Colors.white,
       child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 5.0),
+        padding: const EdgeInsets.symmetric(vertical: 8.0),
         child: BottomNavigationBar(
+          type: BottomNavigationBarType.fixed,
+          backgroundColor: Colors.transparent, // Keep it transparent to blend with BottomAppBar
+          elevation: 0,
           currentIndex: currentIndex,
-          onTap: onTap, // Pass the index to the parent to handle the change
-          items: const <BottomNavigationBarItem>[
+          onTap: onTap,
+          items: [
             BottomNavigationBarItem(
-              icon: Icon(Icons.play_arrow),
+              icon: Icon(Icons.play_circle_fill, size: 28),
               label: 'Play',
             ),
             BottomNavigationBarItem(
-              icon: SizedBox.shrink(), // Leave space for FloatingActionButton
-              label: '',
+              icon: Icon(Icons.mic, size: 28),
+              label: 'Talk',
             ),
             BottomNavigationBarItem(
-              icon: Icon(Icons.school),
+              icon: Icon(Icons.school, size: 28),
               label: 'Learn',
             ),
           ],
-          selectedItemColor: Colors.blueAccent,
+          selectedItemColor: Colors.teal,
           unselectedItemColor: Colors.grey,
           showUnselectedLabels: true,
+          selectedLabelStyle: TextStyle(fontWeight: FontWeight.bold),
         ),
       ),
     );

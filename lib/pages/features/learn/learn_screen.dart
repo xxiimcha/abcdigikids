@@ -33,6 +33,10 @@ class _LearnScreenState extends State<LearnScreen> with SingleTickerProviderStat
 
   @override
   Widget build(BuildContext context) {
+    // Get screen dimensions for responsiveness
+    double screenHeight = MediaQuery.of(context).size.height;
+    double screenWidth = MediaQuery.of(context).size.width;
+
     return Scaffold(
       body: SafeArea(
         child: Stack(
@@ -42,6 +46,8 @@ class _LearnScreenState extends State<LearnScreen> with SingleTickerProviderStat
               child: Image.asset(
                 'assets/backgrounds/chalkboard.gif',
                 fit: BoxFit.cover,
+                width: screenWidth,
+                height: screenHeight,
               ),
             ),
             // Semi-transparent overlay
@@ -54,53 +60,55 @@ class _LearnScreenState extends State<LearnScreen> with SingleTickerProviderStat
               opacity: _fadeAnimation,
               child: Padding(
                 padding: const EdgeInsets.all(16.0),
-                child: SingleChildScrollView(
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      // Categories Section
-                      Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Text(
-                            'Categories',
-                            style: TextStyle(
-                              fontSize: 22,
-                              fontWeight: FontWeight.bold,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ],
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    // Categories Section
+                    Text(
+                      'Categories',
+                      style: TextStyle(
+                        fontSize: screenHeight * 0.03,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.white,
                       ),
-                      SizedBox(height: 20),
+                    ),
+                    SizedBox(height: screenHeight * 0.02),
 
-                      // Category Cards with new design (Lion button style)
-                      CategoryCard(
-                        color: Colors.orangeAccent,
-                        title: 'Colors',
-                        subtitle: 'Learn the different colors.',
-                        iconPath: 'assets/icons/colors_icon.png', // Placeholder for lion image path
+                    // Expanded category list to fill remaining space
+                    Expanded(
+                      child: SingleChildScrollView(
+                        child: Column(
+                          children: [
+                            // Category Cards with new design
+                            CategoryCard(
+                              color: Colors.orangeAccent,
+                              title: 'Colors',
+                              subtitle: 'Learn the different colors.',
+                              iconPath: 'assets/icons/colors_icon.png',
+                            ),
+                            CategoryCard(
+                              color: Colors.lightBlueAccent,
+                              title: 'Numbers',
+                              subtitle: 'Learn to count with numbers!',
+                              iconPath: 'assets/icons/numbers_icon.png',
+                            ),
+                            CategoryCard(
+                              color: Colors.greenAccent,
+                              title: 'Shapes',
+                              subtitle: 'Discover different shapes!',
+                              iconPath: 'assets/icons/shapes_icon.png',
+                            ),
+                            CategoryCard(
+                              color: Colors.pinkAccent,
+                              title: 'Letters',
+                              subtitle: 'Learn the alphabet!',
+                              iconPath: 'assets/icons/letters_icon.png',
+                            ),
+                          ],
+                        ),
                       ),
-                      CategoryCard(
-                        color: Colors.lightBlueAccent,
-                        title: 'Numbers',
-                        subtitle: 'Learn to count with numbers!',
-                        iconPath: 'assets/icons/numbers_icon.png',
-                      ),
-                      CategoryCard(
-                        color: Colors.greenAccent,
-                        title: 'Shapes',
-                        subtitle: 'Discover different shapes!',
-                        iconPath: 'assets/icons/shapes_icon.png',
-                      ),
-                      CategoryCard(
-                        color: Colors.pinkAccent,
-                        title: 'Letters',
-                        subtitle: 'Learn the alphabet!',
-                        iconPath: 'assets/icons/letters_icon.png',
-                      ),
-                    ],
-                  ),
+                    ),
+                  ],
                 ),
               ),
             ),
@@ -127,6 +135,7 @@ class CategoryCard extends StatefulWidget {
   @override
   _CategoryCardState createState() => _CategoryCardState();
 }
+
 class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderStateMixin {
   late AnimationController _scaleController;
   late Animation<double> _scaleAnimation;
@@ -169,26 +178,32 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
 
   @override
   Widget build(BuildContext context) {
+    double screenWidth = MediaQuery.of(context).size.width;
+    double screenHeight = MediaQuery.of(context).size.height;
+
     return GestureDetector(
-      onTapDown: (_) => _scaleController.reverse(), // Start animation on tap down
-      onTapUp: (_) => _scaleController.forward(), // End animation on tap up
-      onTapCancel: () => _scaleController.forward(), // Handle cancel events
+      onTapDown: (_) => _scaleController.reverse(),
+      onTapUp: (_) => _scaleController.forward(),
+      onTapCancel: () => _scaleController.forward(),
       onTap: () {
-        navigateToPage(context); // Navigate to the respective swipe page
+        navigateToPage(context);
       },
       child: ScaleTransition(
-        scale: _scaleAnimation, // Apply the scale animation
+        scale: _scaleAnimation,
         child: Container(
-          margin: EdgeInsets.only(bottom: 20),
-          padding: EdgeInsets.all(16),
+          margin: EdgeInsets.only(bottom: screenHeight * 0.02),
+          padding: EdgeInsets.symmetric(
+            vertical: screenHeight * 0.025,
+            horizontal: screenWidth * 0.05,
+          ),
           decoration: BoxDecoration(
-            color: widget.color ?? Colors.white, // Background color based on the category
-            borderRadius: BorderRadius.circular(20), // Rounded corners like in the button layout
+            color: widget.color ?? Colors.white,
+            borderRadius: BorderRadius.circular(20),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withOpacity(0.1),
                 blurRadius: 10,
-                offset: Offset(0, 5), // Slight shadow for depth
+                offset: Offset(0, 5),
               ),
             ],
           ),
@@ -196,8 +211,8 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
             children: [
               // Icon Image (Left) with no background color
               Container(
-                width: 60,
-                height: 60,
+                width: screenWidth * 0.15,
+                height: screenWidth * 0.15,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                 ),
@@ -206,28 +221,30 @@ class _CategoryCardState extends State<CategoryCard> with SingleTickerProviderSt
                   fit: BoxFit.contain,
                 ),
               ),
-              SizedBox(width: 20),
+              SizedBox(width: screenWidth * 0.05),
 
               // Text (Right)
-              Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    widget.title,
-                    style: TextStyle(
-                      fontSize: 18,
-                      fontWeight: FontWeight.bold,
-                      color: Colors.black, // Text color as black
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      widget.title,
+                      style: TextStyle(
+                        fontSize: screenHeight * 0.025,
+                        fontWeight: FontWeight.bold,
+                        color: Colors.black,
+                      ),
                     ),
-                  ),
-                  Text(
-                    widget.subtitle, // Display the subtitle
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: Colors.grey[700],
+                    Text(
+                      widget.subtitle,
+                      style: TextStyle(
+                        fontSize: screenHeight * 0.02,
+                        color: Colors.grey[700],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
             ],
           ),
